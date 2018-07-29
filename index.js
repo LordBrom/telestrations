@@ -45,14 +45,17 @@ io.sockets.on('connection', function (socket) {
     socket.on('joinGame', function(data, callback){
     	if (!data.gameID) {
     		console.log('No gameID provided');
+        	callback(false)
     		return
     	}
     	if (!data.username) {
     		console.log('No username provided');
+        	callback(false)
     		return
     	}
     	if (!games[data.gameID]){
     		console.log('Game not found');
+        	callback(false)
     		return
     	}
 		var newUser = {
