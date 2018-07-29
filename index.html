@@ -14,10 +14,14 @@
 
 
 		<div id="homePanel"      class="gamePanel" v-if="showPanel == 'homePanel'">
-			<input type="text"   id="joinGameUsername" autocomplete="off" placeholder="Enter Username"  v-model="username" />
+			<div  id="joinGameUsername" class="inputWrapper">
+				<input type="text"  autocomplete="off" placeholder="Enter Username"  v-model="username" />
+			</div>
 
 			<div class="panelSubmit hostGame" v-on:click=hostGame>Host Game</div>
-			<input type="text"   id="joinGameInput" autocomplete="off" placeholder="Enter GameID"  v-model="gameID" v-on:keyup.enter="joinGame" />
+			<div   id="joinGameInput" class="inputWrapper">
+				<input type="text"   autocomplete="off" placeholder="Enter GameID"  v-model="gameID" v-on:keyup.enter="joinGame" />
+			</div>
 			<div class="panelSubmit joinGame" v-on:click=joinGame>Join Game</div>
 		</div>
 
@@ -48,7 +52,9 @@
 			<div id="inputText-picture">
 				<img src="" id="inputText-picture-img" />
 			</div>
-			<input type="text"   id="inputTextField" autocomplete="off" placeholder="Describe what you see."  v-model="textInput" v-on:keyup.enter="submitText" />
+			<div id="inputTextField" class="inputWrapper">
+				<input type="text"   autocomplete="off" placeholder="Describe what you see."  v-model="textInput" v-on:keyup.enter="submitText" />
+			</div>
 			<div class="panelSubmit" v-on:click=submitText>Submit Description</div>
 		</div>
 
