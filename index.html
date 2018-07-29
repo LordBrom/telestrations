@@ -5,16 +5,33 @@
 	<link rel="stylesheet" href="styles/main.css">
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script>
+    <script src="scripts/DrawPad.js"></script>
+    <script src="scripts/Telestration-client.js"></script>
 </head>
 <body>
 
 	<div id="gameWindow">
+
+
 		<div id="homePanel"      class="gamePanel" v-if="showPanel == 'homePanel'">
+			<input type="text"   id="joinGameUsername" autocomplete="off" placeholder="Enter Username"  v-model="username" />
 
 			<div class="panelSubmit hostGame" v-on:click=hostGame>Host Game</div>
-			<input type="text"   id="joinGameInput" autocomplete="off" placeholder="Enter GameID"  v-model="textInput" v-on:keyup.enter="joinGame" />
+			<input type="text"   id="joinGameInput" autocomplete="off" placeholder="Enter GameID"  v-model="gameID" v-on:keyup.enter="joinGame" />
 			<div class="panelSubmit joinGame" v-on:click=joinGame>Join Game</div>
 		</div>
+
+
+		<div id="lobbyPanel"      class="gamePanel" v-if="showPanel == 'lobbyPanel'">
+			<div id="gameIdDisplay" >{{ gameID }}</div>
+			<div id="userList">
+				<ul>
+					<li class="playerName" v-for="player in players" > {{ player.username }} </li>
+				</ul>
+			</div>
+			<div class="panelSubmit" v-on:click=startGame>Start Game</div>
+		</div>
+
 
 		<div id="inputDraw"      class="gamePanel" v-else-if="showPanel == 'inputDraw'">
 			<div id="drawPadPrompt">{{ drawPadPrompt }}</div>
@@ -40,33 +57,27 @@
 		</div>
 	</div>
 
-    <script src="scripts/DrawPad.js"            ></script>
-    <script src="scripts/Telestration-client.js"></script>
     <script src="scripts/Vue.js"                ></script>
 	<script src="/socket.io/socket.io.js"       ></script>
 	<script>
 		var socket = io('/');
 		socket.on('connect',    function(    ){ console.log('connect')    });
-		socket.on('disconnect', function(    ){ console.log('disconnect') });
+		socket.on('disconnect', function(    ){                           });
 		socket.on('fail',       function(data){ console.error(data)       });
 		socket.on('alert',      function(msg ){ alert(msg)                });
 
-
-		socket.on('switchPanel',      function( panelID ){
+		socket.on('switchPanel', function( panelID ){
 			gameApp.showPanel = panelID
 			if (panelID == 'inputDraw') {
 				initCanvas()
 			}
 		});
-		socket.on('setInputDrawPrompt',      function( newPrompt ){
+		socket.on('setInputDrawPrompt', function( newPrompt ){
 			gameApp.drawPadPrompt = newPrompt;
 		});
-
-		gameApp.submitDrawing = function(){
-
-		}
-				initCanvas()
-
+		socket.on('setPlayers', function( data ){
+			gameApp.players = data
+		});
 	</script>
 </body>
 </html>

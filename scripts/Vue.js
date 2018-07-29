@@ -4,12 +4,15 @@ var gameApp = new Vue({
 		username: '',
 		showPanel: 'homePanel',
 		drawPadPrompt: 'test prompt.',
-		textInput: ''
+		textInput: '',
+		gameID: '',
+		players: []
 	},
 	methods: {
 		submitDrawing: submitDrawing,
 		submitText:    submitText,
 		hostGame:      hostGame,
-		joinGame:      joinGame
+		joinGame:      joinGame,
+		startGame:     startGame
 	}
 });

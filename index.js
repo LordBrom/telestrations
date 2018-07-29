@@ -3,6 +3,7 @@ var app        = express();
 var server     = require('http').Server(app);
 var io         = require('socket.io')(server);
 
+var fs         = require('fs');
 var path       = require('path');
 const saveFile = require('save-file');
 const uuidv1   = require('uuid/v1');
@@ -23,20 +24,63 @@ server.listen(8080);
 io.sockets.on('connection', function (socket) {
     console.log('A user has connected');
 
-    socket.on('newGame', function(){
+    socket.on('newGame', function(data, callback){
     	var gameUUID = uuidv1().replace(/-/g, '');
     	var gameID = gameUUID.substring(0, 4)
     	var newGame = new Telestration(gameID);
 
+		var newUser = {
+    		username: data.username,
+    		socketID: socket.id
+    	}
+    	newGame.addPlayer(newUser)
+    	socket.gameID = data.gameID;
+
     	games[gameID] = newGame
         console.log(newGame.getGameID() + ' :game started');
+        callback(gameID, socket.id)
+        socket.emit("switchPanel", "lobbyPanel");
     })
 
-    socket.on('joinGame', function(data){
+    socket.on('joinGame', function(data, callback){
+    	if (!data.gameID) {
+    		console.log('No gameID provided');
+    		return
+    	}
+    	if (!data.username) {
+    		console.log('No username provided');
+    		return
+    	}
+    	if (!games[data.gameID]){
+    		console.log('Game not found');
+    		return
+    	}
+		var newUser = {
+    		username: data.username,
+    		socketID: socket.id
+    	}
+    	socket.gameID = data.gameID;
+    	games[data.gameID].addPlayer(newUser)
+        callback(socket.id)
+        socket.emit("switchPanel", "lobbyPanel");
 
+        socket.broadcast.emit("setPlayers", games[data.gameID].exportPlayers());
+        socket.emit("setPlayers", games[data.gameID].exportPlayers());
     })
 
     socket.on('disconnect', function(data){
+        console.log(socket.un + ' has disconnected');
+    	var gameID = socket.gameID;
+    	if (!gameID) {
+    		return
+    	}
+    	if (!games[gameID]) {
+    		return
+    	}
+    	if (games[gameID].status == "lobby") {
+    		games[gameID].removePlayer(socket.id)
+        	socket.broadcast.emit("setPlayers", games[gameID].exportPlayers());
+    	}
         console.log(socket.un + ' has disconnected');
     })
 
@@ -51,5 +95,6 @@ io.sockets.on('connection', function (socket) {
     })
 });
 
+console.log('ready')
 
 
