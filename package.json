@@ -1,0 +1,29 @@
+{
+  "name": "telestrations",
+  "version": "1.0.0",
+  "description": "The Telestrations game made with Node.js and Vue.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LordBrom/telestrations.git"
+  },
+  "keywords": [
+    "telestrations",
+    "vue"
+  ],
+  "author": "Nate Mills",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LordBrom/telestrations/issues"
+  },
+  "homepage": "https://github.com/LordBrom/telestrations#readme",
+  "dependencies": {
+    "express": "^4.16.3",
+    "path": "^0.12.7",
+    "signature_pad": "^2.3.2",
+    "socket.io": "^2.1.1"
+  }
+}
