@@ -1,0 +1,160 @@
+#gameWindow {
+	position: fixed;
+	top:      0;
+	left:     0;
+	height:   100%;
+	width:    100%;
+}
+
+#gameWindow .gamePanel {
+	position: absolute;
+	top:      0;
+	left:     0;
+	height:   100%;
+	width:    100%;
+}
+
+#gameWindow .gamePanel .panelSubmit {
+	position:      absolute;
+	bottom:        25px;
+	left:          25px;
+	right:         25px;
+
+	height:        50px;
+	line-height:   50px;
+	text-align:    center;
+	font-size:     25px;
+
+	border:        1px solid black;
+    border-radius: 25px;
+
+}
+
+/*******************************************************
+Draw Pad Panel
+*******************************************************/
+
+#gameWindow .gamePanel .panelSubmit.hostGame {
+	bottom:        225px;
+}
+
+#homePanel #joinGameInput {
+	position:      absolute;
+	bottom:        100px;
+	left:          25px;
+	right:         25px;
+	height:        50px;
+
+	-webkit-appearance: none;
+
+    font-size: 25px;
+}
+
+#gameWindow .gamePanel .panelSubmit.joinGame {
+
+}
+
+/*******************************************************
+Draw Pad Panel
+*******************************************************/
+#inputDraw #drawPadPrompt {
+	position:      absolute;
+	top:           25px;
+	left:          25px;
+	right:         25px;
+
+	height:        50px;
+	line-height:   50px;
+	text-align:    center;
+	font-size:     25px;
+
+	border:        1px solid black;
+    border-radius: 25px;
+}
+
+#inputDraw #drawPad {
+	position: absolute;
+	top:      100px;
+	bottom:   100px;
+	left:     25px;
+	right:    25px;
+
+	border:   1px solid black;
+}
+
+#inputDraw #drawPad .drawPad--body {
+	position: absolute;
+	top:      0;
+	left:     0;
+	height:   100%;
+	width:    100%;
+}
+
+#inputDraw #drawPad canvas {
+	position: absolute;
+	top:      0;
+	left:     0;
+	height:   100%;
+	width:    100%;
+
+}
+
+/*******************************************************
+Text Pad Panel
+*******************************************************/
+#inputText #inputTextField {
+	position:      absolute;
+	bottom:        100px;
+	left:          25px;
+	right:         25px;
+	height:        50px;
+
+	-webkit-appearance: none;
+
+    font-size: 25px;
+}
+/*#inputText #drawPadPrompt {
+	position:      absolute;
+	top:           25px;
+	left:          25px;
+	right:         25px;
+
+	height:        50px;
+	line-height:   50px;
+	text-align:    center;
+	font-size:     25px;
+
+	border:        1px solid black;
+    border-radius: 25px;
+}
+
+#inputText #drawPad {
+	position: absolute;
+	top:      100px;
+	bottom:   100px;
+	left:     25px;
+	right:    25px;
+
+	border:   1px solid black;
+}
+
+#inputText #drawPad .drawPad--body {
+	position: absolute;
+	top:      0;
+	left:     0;
+	height:   100%;
+	width:    100%;
+}
+
+#inputText #drawPad canvas {
+	position: absolute;
+	top:      0;
+	left:     0;
+	height:   100%;
+	width:    100%;
+
+}*/
+
+#inputDraw.gamePanel {  }
+#inputText.gamePanel { background-color: #10ddfa }
+#displayMessage.gamePanel { background-color: #0a0464 }
