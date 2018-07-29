@@ -63,48 +63,29 @@ module.exports = class Telestration  {
 	}
 
 	startGame() {
-		var gameJsonOBJ = {playerCount : this.players.length, sheets : []}
 
 		for (var i = 0; i < this.players.length; i++) {
 			if (this.socketIO.sockets.connected[this.players[i].socketID]) {
 				var firstPrompt = this.initialGamePrompts[this.pickInitialPrompt()]
 				var newGameSheet = new GameSheet(this.id, this.players, i, firstPrompt);
 				this.gameSheets.push(newGameSheet)
-				gameJsonOBJ.sheets.push(newGameSheet.rounds)
 	    		this.socketIO.sockets.connected[this.players[i].socketID].emit('setInputDrawPrompt', firstPrompt)
 	    		this.socketIO.sockets.connected[this.players[i].socketID].emit('switchPanel', 'inputDraw')
 
 			}
     	}
 
-  //   	var gameJsonSTR = JSON.stringify(gameJsonOBJ);
-  //   	this.mkdirp(this.gamesDir + this.id, function(err) {
-		//     if (err) {
-		//         console.log(err);
-		//     }
-		// });
-
-  //   	this.fs.writeFile( this.gamesDir + this.id + "/game.json", gameJsonSTR, function(err) {
-		//     if (err) {
-		//         console.log(err);
-		//     }
-		// })
+    	this.mkdirp(this.gamesDir + this.id, function(err) {
+		    if (err) {
+		        console.log(err);
+		    }
+		});
 
 	}
 
+	startRound(round) {
 
-	// 	for (var i = 0; i < this.players.length; i++) {
-	// 		if (this.socketIO.sockets.connected[this.players[i].socketID]) {
-	// 			gameJsonOBJ.sheets[this.players[i].socketID] = []
-	// 			gameJsonOBJ.sheets[this.players[i].socketID][0] = this.players[i].prompt
-	//     		this.socketIO.sockets.connected[this.players[i].socketID].emit('setInputDrawPrompt', this.players[i].prompt)
-	//     		this.socketIO.sockets.connected[this.players[i].socketID].emit('switchPanel', 'inputDraw')
-	// 		}
- 	//    	}
-
- 	startRound(round) {
-
- 	}
+	}
 
 
 
