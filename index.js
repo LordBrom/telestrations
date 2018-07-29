@@ -24,9 +24,26 @@ server.listen(8080);
 io.sockets.on('connection', function (socket) {
     console.log('A user has connected');
 
+    socket.on('disconnect', function(data){
+        console.log(socket.un + ' has disconnected');
+    	var gameID = socket.gameID;
+    	if (!gameID) {
+        	console.log("debug", "no game id");
+    		return
+    	}
+    	if (!games[gameID]) {
+        	console.log("debug", "no game found");
+    		return
+    	}
+    	if (games[gameID].status == "lobby") {
+    		games[gameID].removePlayer(socket.id)
+        	socket.broadcast.emit("setPlayers", games[gameID].exportPlayers());
+    	}
+    })
+
     socket.on('newGame', function(data, callback){
     	var gameUUID = uuidv1().replace(/-/g, '');
-    	var gameID = gameUUID.substring(0, 4)
+    	var gameID = gameUUID.substring(0, 4).toUpperCase();
     	var newGame = new Telestration(gameID);
 
 		var newUser = {
@@ -34,7 +51,7 @@ io.sockets.on('connection', function (socket) {
     		socketID: socket.id
     	}
     	newGame.addPlayer(newUser)
-    	socket.gameID = data.gameID;
+    	socket.gameID = gameID;
 
     	games[gameID] = newGame
         console.log(newGame.getGameID() + ' :game started');
@@ -71,27 +88,21 @@ io.sockets.on('connection', function (socket) {
         socket.emit("setPlayers", games[data.gameID].exportPlayers());
     })
 
-    socket.on('disconnect', function(data){
-        console.log(socket.un + ' has disconnected');
-    	var gameID = socket.gameID;
-    	if (!gameID) {
-    		return
-    	}
-    	if (!games[gameID]) {
-    		return
-    	}
-    	if (games[gameID].status == "lobby") {
-    		games[gameID].removePlayer(socket.id)
-        	socket.broadcast.emit("setPlayers", games[gameID].exportPlayers());
-    	}
-        console.log(socket.un + ' has disconnected');
+
+
+    socket.on('startGame', function(data){
     })
+
+
 
     socket.on('saveFile', function(data){
         saveFile(data, __dirname  + '\\gamePictures\\TestPicture.png',(err, data) => {
 			if (err) console.log("saveFile - error", err);
 		})
     })
+
+
+
 
     socket.on('enterGuess', function(data){
     	console.log(data)

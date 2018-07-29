@@ -6,6 +6,7 @@ module.exports = class Telestration  {
 	    this.status = 'lobby';
 
 		this.initialGamePrompts = ['This is prompt one.','This is prompt two.','This is prompt three.','This is prompt four.','This is prompt five.','This is prompt six.'];
+		this.promptsIDsUsed = [];
 	}
 
 	getGameID() {
@@ -13,10 +14,24 @@ module.exports = class Telestration  {
 	}
 
 	pickInitialPrompt() {
-		this.initialGamePrompts[Math.floor(Math.random() * this.initialGamePrompts.length)];
+		var num = Math.floor(Math.random() * this.initialGamePrompts.length);
+		console.log('"randomNum":', num)
+		return num
 	}
 
 	addPlayer(newUser) {
+		var promptID = this.pickInitialPrompt()
+		var usablePrompt = this.promptsIDsUsed[promptID]
+
+		while (usablePrompt){
+			promptID = this.pickInitialPrompt()
+			usablePrompt = this.promptsIDsUsed[promptID]
+		}
+
+		this.promptsIDsUsed[promptID] = true;
+
+		newUser.prompt = this.initialGamePrompts[promptID]
+
     	this.players.push(newUser)
 	}
 
@@ -29,8 +44,10 @@ module.exports = class Telestration  {
 	}
 
 	removePlayer(i_socketID) {
+				console.log("looking for ID ", i_socketID)
 		for (var i = 0; i < this.players.length; i++) {
 			if (this.players[i].socketID == i_socketID) {
+				console.log("removing player ", this.players[i])
 				this.players.splice(i, 1);
 				return true
 			}
