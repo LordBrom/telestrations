@@ -13,6 +13,8 @@ app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
 
+server.listen(8080);
+
 io.sockets.on('connection', function (socket) {
     console.log('A user has connected');
 
@@ -20,4 +22,3 @@ io.sockets.on('connection', function (socket) {
         console.log(socket.un + ' has disconnected');
     })
 });
-console.log('test')
