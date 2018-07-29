@@ -23,6 +23,7 @@
   "dependencies": {
     "express": "^4.16.3",
     "fs": "0.0.1-security",
+    "mkdirp": "^0.5.1",
     "path": "^0.12.7",
     "save-file": "^1.2.0",
     "signature_pad": "^2.3.2",

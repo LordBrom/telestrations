@@ -5,6 +5,7 @@ var io         = require('socket.io')(server);
 
 var fs         = require('fs');
 var path       = require('path');
+var mkdirp     = require('mkdirp');
 const saveFile = require('save-file');
 const uuidv1   = require('uuid/v1');
 
@@ -91,12 +92,22 @@ io.sockets.on('connection', function (socket) {
 
 
     socket.on('startGame', function(data){
+    	console.log("starting game")
+    	games[socket.gameID].status = 'playing'
+
+    	games[socket.gameID].socketIO = io
+    	games[socket.gameID].fs = fs
+    	games[socket.gameID].mkdirp = mkdirp
+    	games[socket.gameID].gamesDir = __dirname  + '/games/'
+
+    	games[socket.gameID].startGame();
+
     })
 
 
 
     socket.on('saveFile', function(data){
-        saveFile(data, __dirname  + '\\gamePictures\\TestPicture.png',(err, data) => {
+        saveFile(data, __dirname  + '/gamePictures/TestPicture.png',(err, data) => {
 			if (err) console.log("saveFile - error", err);
 		})
     })
