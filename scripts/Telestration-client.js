@@ -4,15 +4,21 @@ var submitDrawing = function() {
 	} else {
 		var dataURL = drawPad.toDataURL();
 		var blob = dataURLToBlob(dataURL);
-		socket.emit('saveFile', blob)
+		socket.emit('saveFile', {fileData: blob, gameRound: gameApp.gameRound})
 	}
+	gameApp.gameRound++;
+	setNewRound();
 }
 var submitText = function() {
 	if (gameApp.textInput == '') {
 		alert("No text entered.");
 	} else {
-		socket.emit('enterGuess', gameApp.textInput)
+
+		socket.emit('enterGuess', { "text": gameApp.textInput, "gameRound": gameApp.gameRound })
 	}
+	gameApp.textInput = '';
+	gameApp.gameRound++;
+	setNewRound();
 }
 
 var hostGame = function() {
@@ -48,4 +54,45 @@ var joinGame = function() {
 }
 var startGame = function() {
 	socket.emit("startGame");
+}
+
+var setNewRound = function() {
+	if (!gameApp.nextRounds.length) {
+		gameApp.showPanel = "waitPanel";
+		gameApp.waitingForPrompt = 1;
+		return;
+	}
+	gameApp.waitingForPrompt = 0;
+	var nextRound = gameApp.nextRounds[0];
+
+	if (nextRound.type == "draw") {
+		gameApp.drawPadPrompt = nextRound.promptText
+		gameApp.showPanel = "inputDraw";
+		setTimeout(function(){
+			console.log('timedout')
+			gameApp.initCanvas()
+		}, 10)
+
+	} else if (nextRound.type == "text") {
+		gameApp.drawPadPrompt = ""
+		gameApp.imagePrompt = nextRound.promptText
+		gameApp.showPanel = "inputText";
+
+	}
+	gameApp.nextRounds.shift();
+
+}
+
+var resetGame = function() {
+	gameApp.username         = '';
+	gameApp.showPanel        = 'homePanel';
+	gameApp.drawPadPrompt    = 'test prompt.';
+	gameApp.imagePrompt      = '';
+	gameApp.textInput        = '';
+	gameApp.gameID           = '';
+	gameApp.players          = [];
+	gameApp.gameRound        = 1;
+	gameApp.nextRounds       = [];
+	gameApp.waitingForPrompt = 0;
+	gameApp.finalSheet       = [];
 }

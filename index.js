@@ -15,6 +15,7 @@ var games = {};
 
 app.use("/styles",  express.static(path.join(__dirname, 'styles')));
 app.use("/scripts", express.static(path.join(__dirname, 'scripts')));
+app.use("/games",   express.static(path.join(__dirname, 'games')));
 
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
@@ -62,17 +63,17 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('joinGame', function(data, callback){
     	if (!data.gameID) {
-    		console.log('No gameID provided');
+    		console.log("debug", 'No gameID provided');
         	callback(false)
     		return
     	}
     	if (!data.username) {
-    		console.log('No username provided');
+    		console.log("debug", 'No username provided');
         	callback(false)
     		return
     	}
     	if (!games[data.gameID]){
-    		console.log('Game not found');
+    		console.log("debug", 'Game not found');
         	callback(false)
     		return
     	}
@@ -107,16 +108,50 @@ io.sockets.on('connection', function (socket) {
 
 
     socket.on('saveFile', function(data){
-        saveFile(data, __dirname  + '/gamePictures/TestPicture.png',(err, data) => {
+    	if (!data.fileData){
+    		console.log("debug", "no file data.")
+    		return
+    	}
+    	if (!data.gameRound){
+    		console.log("debug", "no game round.")
+    		return
+    	}
+    	var gameID = socket.gameID;
+    	if (!gameID){
+    		console.log("debug", "no gameID.")
+    		return
+    	}
+    	var imageUUID = uuidv1().replace(/-/g, '');
+    	var imagePath = '/games/' + gameID + '/' + imageUUID + ".png";
+        saveFile(data.fileData, __dirname  + imagePath,(err, data) => {
 			if (err) console.log("saveFile - error", err);
 		})
+    	if (!games[gameID]){
+    		console.log("debug", "game not found.")
+    		return
+    	}
+
+    	games[gameID].setRoundResult(socket.id, data.gameRound, imagePath);
     })
 
 
 
 
     socket.on('enterGuess', function(data){
-    	console.log(data)
+    	if (!data.text){
+    		console.log("debug", "no guess.")
+    		return
+    	}
+    	if (!data.gameRound){
+    		console.log("debug", "no game round.")
+    		return
+    	}
+    	var gameID = socket.gameID;
+    	if (!gameID){
+    		console.log("debug", "no gameID.")
+    		return
+    	}
+    	games[gameID].setRoundResult(socket.id, data.gameRound, data.text);
     })
 });
 

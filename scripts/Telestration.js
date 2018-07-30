@@ -29,7 +29,6 @@ module.exports = class Telestration  {
 		var usablePrompt = this.promptsIDsUsed[num]
 
 		while (usablePrompt){
-			console.log("rand", num)
 			num = Math.floor(Math.random() * this.initialGamePrompts.length);
 			usablePrompt = this.promptsIDsUsed[num]
 		}
@@ -39,6 +38,8 @@ module.exports = class Telestration  {
 	}
 
 	addPlayer(newUser) {
+		newUser.round = 1;
+		newUser.isFinished = 0;
 
     	this.players.push(newUser)
 	}
@@ -52,7 +53,6 @@ module.exports = class Telestration  {
 	}
 
 	removePlayer(i_socketID) {
-		console.log("looking for ID ", i_socketID)
 		for (var i = 0; i < this.players.length; i++) {
 			if (this.players[i].socketID == i_socketID) {
 				this.players.splice(i, 1);
@@ -69,9 +69,10 @@ module.exports = class Telestration  {
 				var firstPrompt = this.initialGamePrompts[this.pickInitialPrompt()]
 				var newGameSheet = new GameSheet(this.id, this.players, i, firstPrompt);
 				this.gameSheets.push(newGameSheet)
+
+
 	    		this.socketIO.sockets.connected[this.players[i].socketID].emit('setInputDrawPrompt', firstPrompt)
 	    		this.socketIO.sockets.connected[this.players[i].socketID].emit('switchPanel', 'inputDraw')
-
 			}
     	}
 
@@ -83,10 +84,59 @@ module.exports = class Telestration  {
 
 	}
 
-	startRound(round) {
-
+	getNextRound(socketID, gameRound) {
+		for (var i = 0; i < this.gameSheets.length; i++) {
+			if (this.gameSheets[i].rounds[gameRound].socketID == socketID) {
+				return {
+					type: this.gameSheets[i].rounds[gameRound].type,
+					promptText: this.gameSheets[i].rounds[gameRound - 1].text
+				}
+			}
+		}
+		return false;
 	}
 
 
+	setRoundResult(socketID, gameRound, resultText) {
+		for (var i = 0; i < this.gameSheets.length; i++) {
+			if (this.gameSheets[i].rounds[gameRound].socketID == socketID) {
+				this.gameSheets[i].rounds[gameRound].text = resultText;
 
+				if (gameRound + 1 == this.gameSheets[i].rounds.length )
+				{
+					this.gameSheets[i].isFinished = true;
+					if (this.isGameFinished()) {
+						// handle all final panel
+						this.sendResults()
+					} else {
+						this.socketIO.sockets.connected[socketID].emit("switchPanel", "waitPanel");
+						console.log("game over")
+					}
+				} else {
+					var newRound = {type: this.gameSheets[i].rounds[gameRound + 1].type, promptText: this.gameSheets[i].rounds[gameRound].text}
+					this.socketIO.sockets.connected[this.gameSheets[i].rounds[gameRound + 1].socketID].emit("setRound", newRound)
+				}
+
+				return true;
+			}
+		}
+		return false;
+	}
+
+
+	sendResults() {
+		for (var i = 0; i < this.gameSheets.length; i++) {
+			this.socketIO.sockets.connected[this.gameSheets[i].rounds[0].socketID].emit("setResult", this.gameSheets[i].rounds)
+			this.socketIO.sockets.connected[this.gameSheets[i].rounds[0].socketID].emit("switchPanel", "finalPanel")
+		}
+	}
+
+	isGameFinished() {
+		for (var i = 0; i < this.gameSheets.length; i++) {
+			if (!this.gameSheets[i].isFinished) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

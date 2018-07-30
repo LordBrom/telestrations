@@ -50,7 +50,7 @@
 
 		<div id="inputText"      class="gamePanel" v-else-if="showPanel == 'inputText'">
 			<div id="inputText-picture">
-				<img src="" id="inputText-picture-img" />
+				<img v-bind:src="imagePrompt" id="inputText-picture-img" />
 			</div>
 			<div id="inputTextField" class="inputWrapper">
 				<input type="text"   autocomplete="off" placeholder="Describe what you see."  v-model="textInput" v-on:keyup.enter="submitText" />
@@ -59,7 +59,32 @@
 		</div>
 
 
-		<div id="displayMessage" class="gamePanel" v-else-if="showPanel == 'displayMessage'">
+		<div id="waitPanel" class="gamePanel" v-else-if="showPanel == 'waitPanel'">
+			<div class="msg">
+				waiting on other players...
+			</div>
+		</div>
+
+
+		<div id="finalPanel" class="gamePanel" v-else-if="showPanel == 'finalPanel'">
+			<div id="scrollContainer">
+				<ul>
+					<li class="result" v-for="item in finalSheet">
+						<div class="result-picture" v-if="item.type == 'draw'">
+							<img v-bind:src="item.text" id="inputText-picture-img" />
+						</div>
+						<div class="result-text" v-else-if="item.type == 'text'">
+							{{ item.text }}
+						</div>
+					</li>
+					<li class="result" >
+						<div class="result-spacer">&nbsp;</div>
+					</li>
+					<li class="result" >
+						<div class="result-text" v-on:click=resetGame>Quit Game</div>
+					</li>
+				</ul>
+			</div>
 		</div>
 	</div>
 
@@ -75,11 +100,21 @@
 		socket.on('switchPanel', function( panelID ){
 			gameApp.showPanel = panelID
 			if (panelID == 'inputDraw') {
-				initCanvas()
+				gameApp.initCanvas()
 			}
 		});
 		socket.on('setInputDrawPrompt', function( newPrompt ){
 			gameApp.drawPadPrompt = newPrompt;
+		});
+		socket.on('setRound', function( data ){
+			console.log('setRound', data)
+			gameApp.nextRounds.push(data)
+			if (gameApp.waitingForPrompt) {
+				setNewRound();
+			}
+		});
+		socket.on('setResult', function( data ){
+			gameApp.finalSheet = data
 		});
 		socket.on('setPlayers', function( data ){
 			gameApp.players = data

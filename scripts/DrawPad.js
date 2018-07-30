@@ -1,15 +1,18 @@
 var drawPad = false;
 var drawPadCanvas = false;
+var drawPadInitialized = false;
 
 function initCanvas() {
+	setTimeout(function(){
+		var drawPadDiv = document.getElementById("drawPad");
+		drawPadCanvas = drawPadDiv.querySelector("canvas");
+		drawPad = new SignaturePad(drawPadCanvas, {
+			backgroundColor: 'rgb(255, 255, 255)'
+		});
 
-	var drawPadDiv = document.getElementById("drawPad");
-	drawPadCanvas = drawPadDiv.querySelector("canvas");
-	drawPad = new SignaturePad(drawPadCanvas, {
-		backgroundColor: 'rgb(255, 255, 255)'
-	});
-
-	resizeCanvas()
+		resizeCanvas()
+		drawPadInitialized = true;
+	}, 10)
 }
 
 function resizeCanvas() {
@@ -19,8 +22,6 @@ function resizeCanvas() {
 	}
 
 	var ratio =  Math.max(window.devicePixelRatio || 1, 1);
-
-	console.log(ratio)
 
 	drawPadCanvas.width = drawPadCanvas.offsetWidth * ratio;
 	drawPadCanvas.height = drawPadCanvas.offsetHeight * ratio;
