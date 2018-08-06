@@ -1,6 +1,6 @@
 
 const GameSheet   = require('./GameSheet.js');
-const PromptList   = require('./../PromptList.js');
+const PromptList  = require('./../PromptList.js');
 
 module.exports = class Telestration  {
 
@@ -97,13 +97,18 @@ module.exports = class Telestration  {
 	}
 
 
-	setRoundResult(socketID, gameRound, resultText) {
+	setRoundResult(socketID, gameRound, resultText, gamePath) {
 		for (var i = 0; i < this.gameSheets.length; i++) {
 			if (this.gameSheets[i].rounds[gameRound].socketID == socketID) {
 				this.gameSheets[i].rounds[gameRound].text = resultText;
 
-				if (gameRound + 1 == this.gameSheets[i].rounds.length )
+				if (gameRound + 1 >= this.gameSheets[i].rounds.length || gameRound + 1 > 8 )
 				{
+			        this.fs.writeFile( gamePath + "gameSheet_" + i + ".json",JSON.stringify(this.gameSheets[i].rounds),(err, data) => {
+						if (err) console.log("saveFile - error", err);
+					})
+
+			        console.log('wroteFile', gamePath + "gameSheet_" + i + ".json")
 					this.gameSheets[i].isFinished = true;
 					if (this.isGameFinished()) {
 						// handle all final panel

@@ -69,7 +69,6 @@ var setNewRound = function() {
 		gameApp.drawPadPrompt = nextRound.promptText
 		gameApp.showPanel = "inputDraw";
 		setTimeout(function(){
-			console.log('timedout')
 			gameApp.initCanvas()
 		}, 10)
 

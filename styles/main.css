@@ -10,6 +10,8 @@ ul {
 	margin: 0;
 }
 
+#gameRound {position: fixed; top: 0; left: 0;}
+
 
 /*******************************************************
 Game Window

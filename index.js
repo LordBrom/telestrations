@@ -98,7 +98,7 @@ io.sockets.on('connection', function (socket) {
 
     	games[socket.gameID].socketIO = io
     	games[socket.gameID].fs = fs
-    	games[socket.gameID].mkdirp = mkdirp
+        games[socket.gameID].mkdirp = mkdirp
     	games[socket.gameID].gamesDir = __dirname  + '/games/'
 
     	games[socket.gameID].startGame();
@@ -122,7 +122,8 @@ io.sockets.on('connection', function (socket) {
     		return
     	}
     	var imageUUID = uuidv1().replace(/-/g, '');
-    	var imagePath = '/games/' + gameID + '/' + imageUUID + ".png";
+        var gamePath = '/games/' + gameID + '/';
+        var imagePath = gamePath + imageUUID + ".png";
         saveFile(data.fileData, __dirname  + imagePath,(err, data) => {
 			if (err) console.log("saveFile - error", err);
 		})
@@ -131,7 +132,7 @@ io.sockets.on('connection', function (socket) {
     		return
     	}
 
-    	games[gameID].setRoundResult(socket.id, data.gameRound, imagePath);
+    	games[gameID].setRoundResult(socket.id, data.gameRound, imagePath, __dirname + gamePath);
     })
 
 
@@ -151,7 +152,8 @@ io.sockets.on('connection', function (socket) {
     		console.log("debug", "no gameID.")
     		return
     	}
-    	games[gameID].setRoundResult(socket.id, data.gameRound, data.text);
+        var gamePath = '/games/' + gameID + '/';
+    	games[gameID].setRoundResult(socket.id, data.gameRound, data.text, __dirname + gamePath);
     })
 });
 

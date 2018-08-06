@@ -14,7 +14,7 @@ module.exports = class Telestration  {
 		for (var i = 0; i < players.length; i++) {
 			var type = (i % 2 == 1 ? "text" : "draw")
 			var calcIndex = (startingPlayerIndex + i) % players.length
-			newSegment = { socketID: players[calcIndex].socketID, type: type, src: "", text: "" }
+			newSegment = { socketID: players[calcIndex].socketID, type: type, text: "" }
 			this.rounds.push(newSegment)
 		}
 	}

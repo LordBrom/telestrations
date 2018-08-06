@@ -3,15 +3,17 @@
 <head>
 	<title></title>
 	<link rel="stylesheet" href="styles/main.css">
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> -->
+    <script src="scripts/local_Vue.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script> -->
+    <script src="scripts/local_signaturePad.min.js"></script>
     <script src="scripts/DrawPad.js"></script>
     <script src="scripts/Telestration-client.js"></script>
 </head>
 <body>
 
 	<div id="gameWindow">
-
+		<!-- <div id="gameRound"> {{ gameRound }} </div> -->
 
 		<div id="homePanel"      class="gamePanel" v-if="showPanel == 'homePanel'">
 			<div  id="joinGameUsername" class="inputWrapper">
@@ -91,6 +93,16 @@
     <script src="scripts/Vue.js"                ></script>
 	<script src="/socket.io/socket.io.js"       ></script>
 	<script>
+
+		window.onbeforeunload = function() {
+            if (gameApp.gameID != '')
+            {
+                var message = "Are you sure you want to navigate away from this page?\n\nIf you are in the middle of a game, it will completely mess the game up.";
+                if (confirm(message)) return true;
+                else return false;
+            }
+        }
+
 		var socket = io('/');
 		socket.on('connect',    function(    ){ console.log('connect')    });
 		socket.on('disconnect', function(    ){                           });
@@ -110,7 +122,10 @@
 			console.log('setRound', data)
 			gameApp.nextRounds.push(data)
 			if (gameApp.waitingForPrompt) {
-				setNewRound();
+				setTimeout(function(){
+					setNewRound();
+				}, 100)
+
 			}
 		});
 		socket.on('setResult', function( data ){
