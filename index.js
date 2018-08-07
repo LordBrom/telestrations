@@ -39,11 +39,18 @@ io.sockets.on('connection', function (socket) {
     	}
     	if (games[gameID].status == "lobby") {
     		games[gameID].removePlayer(socket.id)
-        	socket.broadcast.emit("setPlayers", games[gameID].exportPlayers());
+    		io.to(gameID).emit("setPlayers", games[gameID].exportPlayers());
+        	// socket.broadcast.emit("setPlayers", games[gameID].exportPlayers());
     	}
     })
 
     socket.on('newGame', function(data, callback){
+    	if (!data.username) {
+    		console.log("debug", 'No username provided');
+        	callback(false)
+    		return
+    	}
+
     	var gameUUID = uuidv1().replace(/-/g, '');
     	var gameID = gameUUID.substring(0, 4).toUpperCase();
     	var newGame = new Telestration(gameID);
@@ -54,6 +61,7 @@ io.sockets.on('connection', function (socket) {
     	}
     	newGame.addPlayer(newUser)
     	socket.gameID = gameID;
+        socket.join(gameID);
 
     	games[gameID] = newGame
         console.log(newGame.getGameID() + ' :game started');
@@ -85,9 +93,11 @@ io.sockets.on('connection', function (socket) {
     	games[data.gameID].addPlayer(newUser)
         callback(socket.id)
         socket.emit("switchPanel", "lobbyPanel");
+        socket.join(data.gameID);
 
-        socket.broadcast.emit("setPlayers", games[data.gameID].exportPlayers());
-        socket.emit("setPlayers", games[data.gameID].exportPlayers());
+		io.to(data.gameID).emit("setPlayers", games[data.gameID].exportPlayers());
+        // socket.broadcast.emit("setPlayers", games[data.gameID].exportPlayers());
+        // socket.emit("setPlayers", games[data.gameID].exportPlayers());
     })
 
 
@@ -155,7 +165,31 @@ io.sockets.on('connection', function (socket) {
         var gamePath = '/games/' + gameID + '/';
     	games[gameID].setRoundResult(socket.id, data.gameRound, data.text, __dirname + gamePath);
     })
+
+
+
+    socket.on('getNewPrompt', function(data, callback){
+    	var gameID = socket.gameID;
+    	if (!gameID){
+    		console.log("debug", "no gameID.")
+    		return
+    	}
+    	if (!data.prompt){
+    		console.log("debug", "no prompt.")
+    		return
+    	}
+    	fs.appendFile('removePromptList.txt', "\n" + data.prompt, function (err) {
+			if (err) throw err;
+			console.log('Adding "' + data.prompt + '" to the remove list');
+		});
+
+    	callback(games[gameID].getNewPrompt(socket.id));
+    })
 });
+
+var sendMessage = function() {
+
+}
 
 console.log('ready')
 

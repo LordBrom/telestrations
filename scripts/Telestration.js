@@ -144,4 +144,16 @@ module.exports = class Telestration  {
 		}
 		return true;
 	}
+
+	getNewPrompt(socketID) {
+		var newPrompt = this.initialGamePrompts[this.pickInitialPrompt()]
+		for (var i = 0; i < this.gameSheets.length; i++) {
+			if (this.gameSheets[i].rounds[0].socketID == socketID) {
+				this.gameSheets[i].rounds[0].text = newPrompt;
+			}
+		}
+		return newPrompt;
+	}
 }
+
+//socket.broadcast.to(id).emit('my message', msg);

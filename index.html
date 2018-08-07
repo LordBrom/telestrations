@@ -6,7 +6,7 @@
     <!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> -->
     <script src="scripts/local_Vue.min.js"></script>
     <!-- <script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script> -->
-    <script src="scripts/local_signaturePad.min.js"></script>
+    <script src="scripts/local_signature_pad.min.js"></script>
     <script src="scripts/DrawPad.js"></script>
     <script src="scripts/Telestration-client.js"></script>
 </head>
@@ -40,7 +40,7 @@
 
 
 		<div id="inputDraw"      class="gamePanel" v-else-if="showPanel == 'inputDraw'">
-			<div id="drawPadPrompt">{{ drawPadPrompt }}</div>
+			<div id="drawPadPrompt" v-on:click="getNewPrompt">{{ drawPadPrompt }}</div>
 			<div id="drawPad">
 	    		<div class="drawPad--body">
 					<canvas></canvas>
@@ -52,7 +52,7 @@
 
 		<div id="inputText"      class="gamePanel" v-else-if="showPanel == 'inputText'">
 			<div id="inputText-picture">
-				<img v-bind:src="imagePrompt" id="inputText-picture-img" />
+				<img v-bind:src="imagePrompt" id="inputText-picture-img" onerror="imageLoadFailed(this)" />
 			</div>
 			<div id="inputTextField" class="inputWrapper">
 				<input type="text"   autocomplete="off" placeholder="Describe what you see."  v-model="textInput" v-on:keyup.enter="submitText" />

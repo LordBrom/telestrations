@@ -81,6 +81,22 @@ var setNewRound = function() {
 	gameApp.nextRounds.shift();
 
 }
+var getNewPrompt = function() {
+	if (confirm("Are you sure you want a new prompt?")) {
+		socket.emit("getNewPrompt", {"prompt": gameApp.drawPadPrompt}, function(newPrompt){
+			gameApp.drawPadPrompt = newPrompt;
+		});
+	}
+
+}
+
+var imageLoadFailed = function(image) {
+	console.log("imageLoadFailed", image)
+    image.onerror = null;
+    setTimeout(function (){
+        image.src += '?' +new Date;
+     }, 1000);
+}
 
 var resetGame = function() {
 	gameApp.username         = '';

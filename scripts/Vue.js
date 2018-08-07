@@ -19,6 +19,7 @@ var gameApp = new Vue({
 		hostGame:      hostGame,
 		joinGame:      joinGame,
 		startGame:     startGame,
+		getNewPrompt:  getNewPrompt,
 		initCanvas:    initCanvas,
 		resetGame:     resetGame
 	}
