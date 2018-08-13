@@ -6,9 +6,9 @@ var io         = require('socket.io')(server);
 var fs         = require('fs');
 var path       = require('path');
 var mkdirp     = require('mkdirp');
+var loki       = require('lokijs');
 const saveFile = require('save-file');
 const uuidv1   = require('uuid/v1');
-
 
 const Telestration   = require('./scripts/Telestration.js');
 
@@ -22,7 +22,6 @@ app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
 
-var loki = require('lokijs')
 var db = new loki('GameDB.json')
 var gamesTable = db.addCollection('games')
 var playersTable = db.addCollection('players')
@@ -84,24 +83,23 @@ io.sockets.on('connection', function (socket) {
     })
 
     socket.on('joinGame', function(data, callback){
-    	// if (!data.gameID) {
-    	// 	console.log("debug", 'No gameID provided');
-     //    	callback(false)
-    	// 	return
-    	// }
-    	// if (!data.username) {
-    	// 	console.log("debug", 'No username provided');
-     //    	callback(false)
-    	// 	return
-    	// }
-    	// if (!games[data.gameID]){
-    	// 	console.log("debug", 'Game not found');
-     //    	callback(false)
-    	// 	return
-    	// }
+    	if (!data.gameID) {
+    		console.log("debug", 'No gameID provided');
+        	callback(false)
+    		return
+    	}
+    	if (!data.username) {
+    		console.log("debug", 'No username provided');
+        	callback(false)
+    		return
+    	}
+    	if (!gamesTable.find({"gameID": data.gameID}).length){
+    		console.log("debug", 'Game not found');
+        	callback(false)
+    		return
+    	}
 
-        console.log(gamesTable.find({"gameID": gameID}))
-        console.log(gamesTable.find({"gameID": 'test'}))
+        playersTable.insert({"gameID": gameID, "username": data.username, "socketID": socket.id})
 
 		var newUser = {
     		username: data.username,
@@ -109,13 +107,11 @@ io.sockets.on('connection', function (socket) {
     	}
     	socket.gameID = data.gameID;
     	games[data.gameID].addPlayer(newUser)
+
         callback(socket.id)
         socket.emit("switchPanel", "lobbyPanel");
         socket.join(data.gameID);
-
 		io.to(data.gameID).emit("setPlayers", games[data.gameID].exportPlayers());
-        // socket.broadcast.emit("setPlayers", games[data.gameID].exportPlayers());
-        // socket.emit("setPlayers", games[data.gameID].exportPlayers());
     })
 
 
@@ -205,9 +201,6 @@ io.sockets.on('connection', function (socket) {
     })
 });
 
-var sendMessage = function() {
-
-}
 
 console.log('ready')
 
