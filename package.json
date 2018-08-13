@@ -23,7 +23,9 @@
   "dependencies": {
     "express": "^4.16.3",
     "fs": "0.0.1-security",
+    "lokijs": "^1.5.5",
     "mkdirp": "^0.5.1",
+    "npm": "^6.3.0",
     "path": "^0.12.7",
     "save-file": "^1.2.0",
     "signature_pad": "^2.3.2",

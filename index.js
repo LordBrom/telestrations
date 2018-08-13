@@ -9,6 +9,7 @@ var mkdirp     = require('mkdirp');
 const saveFile = require('save-file');
 const uuidv1   = require('uuid/v1');
 
+
 const Telestration   = require('./scripts/Telestration.js');
 
 var games = {};
@@ -20,6 +21,10 @@ app.use("/games",   express.static(path.join(__dirname, 'games')));
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
+
+var loki = require('lokijs')
+var db = new loki('GameDB.json')
+var games = db.addCollection('games')
 
 server.listen(8080);
 
