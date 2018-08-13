@@ -24,7 +24,8 @@ app.get('/', function(req, res){
 
 var loki = require('lokijs')
 var db = new loki('GameDB.json')
-var games = db.addCollection('games')
+var gamesTable = db.addCollection('games')
+var playersTable = db.addCollection('players')
 
 server.listen(8080);
 
@@ -58,6 +59,10 @@ io.sockets.on('connection', function (socket) {
 
     	var gameUUID = uuidv1().replace(/-/g, '');
     	var gameID = gameUUID.substring(0, 4).toUpperCase();
+
+        gamesTable.insert({"gameID": gameID, "status": "setup"})
+        playersTable.insert({"gameID": gameID, "username": data.username, "socketID": socket.id})
+
     	var newGame = new Telestration(gameID);
 
 		var newUser = {
@@ -70,26 +75,34 @@ io.sockets.on('connection', function (socket) {
 
     	games[gameID] = newGame
         console.log(newGame.getGameID() + ' :game started');
+
+
+
+
         callback(gameID, socket.id)
         socket.emit("switchPanel", "lobbyPanel");
     })
 
     socket.on('joinGame', function(data, callback){
-    	if (!data.gameID) {
-    		console.log("debug", 'No gameID provided');
-        	callback(false)
-    		return
-    	}
-    	if (!data.username) {
-    		console.log("debug", 'No username provided');
-        	callback(false)
-    		return
-    	}
-    	if (!games[data.gameID]){
-    		console.log("debug", 'Game not found');
-        	callback(false)
-    		return
-    	}
+    	// if (!data.gameID) {
+    	// 	console.log("debug", 'No gameID provided');
+     //    	callback(false)
+    	// 	return
+    	// }
+    	// if (!data.username) {
+    	// 	console.log("debug", 'No username provided');
+     //    	callback(false)
+    	// 	return
+    	// }
+    	// if (!games[data.gameID]){
+    	// 	console.log("debug", 'Game not found');
+     //    	callback(false)
+    	// 	return
+    	// }
+
+        console.log(gamesTable.find({"gameID": gameID}))
+        console.log(gamesTable.find({"gameID": 'test'}))
+
 		var newUser = {
     		username: data.username,
     		socketID: socket.id
