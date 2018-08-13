@@ -96,8 +96,6 @@ io.sockets.on('connection', function (socket) {
         socket.join(data.gameID);
 
 		io.to(data.gameID).emit("setPlayers", games[data.gameID].exportPlayers());
-        // socket.broadcast.emit("setPlayers", games[data.gameID].exportPlayers());
-        // socket.emit("setPlayers", games[data.gameID].exportPlayers());
     })
 
 
@@ -132,8 +130,9 @@ io.sockets.on('connection', function (socket) {
     		return
     	}
     	var imageUUID = uuidv1().replace(/-/g, '');
+        var fileName = data.gameRound + "_" + socket.id;
         var gamePath = '/games/' + gameID + '/';
-        var imagePath = gamePath + imageUUID + ".png";
+        var imagePath = gamePath + fileName + ".png";
         saveFile(data.fileData, __dirname  + imagePath,(err, data) => {
 			if (err) console.log("saveFile - error", err);
 		})

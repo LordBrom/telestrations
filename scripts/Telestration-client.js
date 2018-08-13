@@ -53,7 +53,9 @@ var joinGame = function() {
 	})
 }
 var startGame = function() {
-	socket.emit("startGame");
+	if (confirm("New players won't be able to join after the game has started. Have all the players joined?")) {
+		socket.emit("startGame");
+	}
 }
 
 var setNewRound = function() {
@@ -82,7 +84,7 @@ var setNewRound = function() {
 
 }
 var getNewPrompt = function() {
-	if (confirm("Are you sure you want a new prompt?")) {
+	if (gameApp .gameRound == 1 && confirm("Are you sure you want a new prompt?")) {
 		socket.emit("getNewPrompt", {"prompt": gameApp.drawPadPrompt}, function(newPrompt){
 			gameApp.drawPadPrompt = newPrompt;
 		});
