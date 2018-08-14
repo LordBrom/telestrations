@@ -1,14 +1,16 @@
-var express    = require('express');
-var app        = express();
-var server     = require('http').Server(app);
-var io         = require('socket.io')(server);
+const express    = require('express');
+const app        = express();
+const server     = require('http').Server(app);
+const io         = require('socket.io')(server);
 
-var fs         = require('fs');
-var path       = require('path');
-var mkdirp     = require('mkdirp');
-var loki       = require('lokijs');
+const fs         = require('fs');
+const path       = require('path');
+const mkdirp     = require('mkdirp');
+const loki       = require('lokijs');
 const saveFile = require('save-file');
 const uuidv1   = require('uuid/v1');
+
+const logger     = require('logger').createLogger('development.log');
 
 const Telestration   = require('./scripts/Telestration.js');
 
@@ -19,51 +21,50 @@ app.use("/scripts", express.static(path.join(__dirname, 'scripts')));
 app.use("/games",   express.static(path.join(__dirname, 'games')));
 
 app.get('/', function(req, res){
-  res.sendFile(__dirname + '/index.html');
+    res.sendFile(__dirname + '/index.html');
 });
 
 var db = new loki('GameDB.json')
 var gamesTable = db.addCollection('games')
 var playersTable = db.addCollection('players')
 
-server.listen(8080);
+server.listen(3000);
 
 io.sockets.on('connection', function (socket) {
-    console.log('A user has connected');
+    logger.info('A user has connected');
 
     socket.on('disconnect', function(data){
-        console.log(socket.un + ' has disconnected');
+        logger.info(socket.un + ' has disconnected');
+        setPlayerDisconnected(socket.id)
+
+
     	var gameID = socket.gameID;
     	if (!gameID) {
-        	console.log("debug", "no game id");
+        	logger.warn("no game id");
     		return
     	}
     	if (!games[gameID]) {
-        	console.log("debug", "no game found");
+        	logger.warn("no game found");
     		return
     	}
     	if (games[gameID].status == "lobby") {
     		games[gameID].removePlayer(socket.id)
     		io.to(gameID).emit("setPlayers", games[gameID].exportPlayers());
-        	// socket.broadcast.emit("setPlayers", games[gameID].exportPlayers());
     	}
     })
 
     socket.on('newGame', function(data, callback){
     	if (!data.username) {
-    		console.log("debug", 'No username provided');
+    		logger.warn('No username provided');
         	callback(false)
     		return
     	}
 
-    	var gameUUID = uuidv1().replace(/-/g, '');
-    	var gameID = gameUUID.substring(0, 4).toUpperCase();
+        var gameID = createGame()
 
-        gamesTable.insert({"gameID": gameID, "status": "setup"})
-        playersTable.insert({"gameID": gameID, "username": data.username, "socketID": socket.id})
+        addPlayer(data.username, gameID, socket.id)
 
     	var newGame = new Telestration(gameID);
-
 		var newUser = {
     		username: data.username,
     		socketID: socket.id
@@ -73,10 +74,7 @@ io.sockets.on('connection', function (socket) {
         socket.join(gameID);
 
     	games[gameID] = newGame
-        console.log(newGame.getGameID() + ' :game started');
-
-
-
+        logger.info(newGame.getGameID() + ' :game started');
 
         callback(gameID, socket.id)
         socket.emit("switchPanel", "lobbyPanel");
@@ -84,22 +82,23 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('joinGame', function(data, callback){
     	if (!data.gameID) {
-    		console.log("debug", 'No gameID provided');
+    		logger.warn('No gameID provided');
         	callback(false)
     		return
     	}
     	if (!data.username) {
-    		console.log("debug", 'No username provided');
+    		logger.warn('No username provided');
         	callback(false)
     		return
     	}
-    	if (!gamesTable.find({"gameID": data.gameID}).length){
-    		console.log("debug", 'Game not found');
+        var gameObj = gamesTable.findOne({"gameID": data.gameID});
+    	if (!gameObj){
+    		logger.warn('Game not found');
         	callback(false)
     		return
     	}
 
-        playersTable.insert({"gameID": gameID, "username": data.username, "socketID": socket.id})
+        addPlayer(data.username, data.gameID, socket.id)
 
 		var newUser = {
     		username: data.username,
@@ -117,7 +116,7 @@ io.sockets.on('connection', function (socket) {
 
 
     socket.on('startGame', function(data){
-    	console.log("starting game")
+    	logger.info("starting game")
     	games[socket.gameID].status = 'playing'
 
     	games[socket.gameID].socketIO = io
@@ -133,26 +132,26 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('saveFile', function(data){
     	if (!data.fileData){
-    		console.log("debug", "no file data.")
+    		logger.warn("no file data.")
     		return
     	}
     	if (!data.gameRound){
-    		console.log("debug", "no game round.")
+    		logger.warn("no game round.")
     		return
     	}
     	var gameID = socket.gameID;
     	if (!gameID){
-    		console.log("debug", "no gameID.")
+    		logger.warn("no gameID.")
     		return
     	}
     	var imageUUID = uuidv1().replace(/-/g, '');
         var gamePath = '/games/' + gameID + '/';
         var imagePath = gamePath + imageUUID + ".png";
         saveFile(data.fileData, __dirname  + imagePath,(err, data) => {
-			if (err) console.log("saveFile - error", err);
+			if (err) logger.error("saveFile - error", err);
 		})
     	if (!games[gameID]){
-    		console.log("debug", "game not found.")
+    		logger.warn("game not found.")
     		return
     	}
 
@@ -164,16 +163,16 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('enterGuess', function(data){
     	if (!data.text){
-    		console.log("debug", "no guess.")
+    		logger.warn("no guess.")
     		return
     	}
     	if (!data.gameRound){
-    		console.log("debug", "no game round.")
+    		logger.warn("no game round.")
     		return
     	}
     	var gameID = socket.gameID;
     	if (!gameID){
-    		console.log("debug", "no gameID.")
+    		logger.warn("no gameID.")
     		return
     	}
         var gamePath = '/games/' + gameID + '/';
@@ -185,22 +184,66 @@ io.sockets.on('connection', function (socket) {
     socket.on('getNewPrompt', function(data, callback){
     	var gameID = socket.gameID;
     	if (!gameID){
-    		console.log("debug", "no gameID.")
+    		logger.warn("no gameID.")
     		return
     	}
     	if (!data.prompt){
-    		console.log("debug", "no prompt.")
+    		logger.warn("no prompt.")
     		return
     	}
     	fs.appendFile('removePromptList.txt', "\n" + data.prompt, function (err) {
 			if (err) throw err;
-			console.log('Adding "' + data.prompt + '" to the remove list');
+			logger.info('Adding "' + data.prompt + '" to the remove list');
 		});
 
     	callback(games[gameID].getNewPrompt(socket.id));
     })
 });
 
+var createGame = function() {
+    var gameUUID = uuidv1().replace(/-/g, '');
+    var gameID = gameUUID.substring(0, 4).toUpperCase();
+
+    gamesTable.insert({
+        "gameID": gameID,
+        "status": "setup"
+    })
+
+    return gameID;
+}
+
+var addPlayer = function(userName, gameID, socketID) {
+    if (!userName || !userName.length) {
+        return false
+    }
+    if (!gameID || !gameID.length) {
+        return false
+    }
+    if (!socketID || !socketID.length) {
+        return false
+    }
+
+    playersTable.insert({
+        "gameID": gameID,
+        "username": userName,
+        "socketID": socketID,
+        "connected": true
+    })
+
+    return true
+}
+
+var setPlayerDisconnected = function(socketID){
+    var player = playersTable.findOne({"socketID": socketID})
+    if (!player) {
+        // player not found
+        return false;
+    }
+    player.connected = false
+    playersTable.update(player)
+
+    return true;
+}
 
 console.log('ready')
 
