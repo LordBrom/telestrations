@@ -2,23 +2,21 @@ const express    = require('express');
 const app        = express();
 const server     = require('http').Server(app);
 const io         = require('socket.io')(server);
-
 const fs         = require('fs');
 const path       = require('path');
 const mkdirp     = require('mkdirp');
 const loki       = require('lokijs');
-const saveFile = require('save-file');
-const uuidv1   = require('uuid/v1');
-
+const saveFile   = require('save-file');
+const uuidv1     = require('uuid/v1');
 const logger     = require('logger').createLogger('development.log');
 
 const Telestration   = require('./scripts/Telestration.js');
 
 var games = {};
 
-app.use("/styles",  express.static(path.join(__dirname, 'styles')));
+app.use("/styles",  express.static(path.join(__dirname, 'styles' )));
 app.use("/scripts", express.static(path.join(__dirname, 'scripts')));
-app.use("/games",   express.static(path.join(__dirname, 'games')));
+app.use("/games",   express.static(path.join(__dirname, 'games'  )));
 
 app.get('/', function(req, res){
     res.sendFile(__dirname + '/index.html');
