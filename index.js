@@ -1,14 +1,16 @@
-const express    = require('express');
-const app        = express();
-const server     = require('http').Server(app);
-const io         = require('socket.io')(server);
-const fs         = require('fs');
-const path       = require('path');
-const mkdirp     = require('mkdirp');
-const loki       = require('lokijs');
-const saveFile   = require('save-file');
-const uuidv1     = require('uuid/v1');
-const logger     = require('logger').createLogger('development.log');
+const express       = require('express');
+const app           = express();
+const server        = require('http').Server(app);
+const io            = require('socket.io')(server);
+const fs            = require('fs');
+const path          = require('path');
+const mkdirp        = require('mkdirp');
+const loki          = require('lokijs');
+const saveFile      = require('save-file');
+const uuidv1        = require('uuid/v1');
+const logger        = require('logger').createLogger('log_dev.log');
+const logger_player = require('logger').createLogger('log_player.log');
+const logger_game   = require('logger').createLogger('log_game.log');
 
 const Telestration   = require('./scripts/Telestration.js');
 
@@ -32,9 +34,9 @@ io.sockets.on('connection', function (socket) {
     logger.info('A user has connected');
 
     socket.on('disconnect', function(data){
-        logger.info(socket.un + ' has disconnected');
+        logger.info('A user has disconnected');
+        logger_player.info(socket.un + ' has disconnected');
         setPlayerDisconnected(socket.id)
-
 
     	var gameID = socket.gameID;
     	if (!gameID) {
@@ -72,7 +74,7 @@ io.sockets.on('connection', function (socket) {
         socket.join(gameID);
 
     	games[gameID] = newGame
-        logger.info(newGame.getGameID() + ' :game started');
+        logger_game.info(newGame.getGameID() + ' :game started');
 
         callback(gameID, socket.id)
         socket.emit("switchPanel", "lobbyPanel");
@@ -114,7 +116,7 @@ io.sockets.on('connection', function (socket) {
 
 
     socket.on('startGame', function(data){
-    	logger.info("starting game")
+    	logger_game.info("starting game ", socket.gameID)
     	games[socket.gameID].status = 'playing'
 
     	games[socket.gameID].socketIO = io
@@ -234,6 +236,7 @@ var addPlayer = function(userName, gameID, socketID) {
 var setPlayerDisconnected = function(socketID){
     var player = playersTable.findOne({"socketID": socketID})
     if (!player) {
+		logger.warn("Player not found with socket id", socketID)
         // player not found
         return false;
     }
