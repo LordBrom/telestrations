@@ -26,10 +26,14 @@ var hostGame = function() {
 		alert('Enter a username.')
 		return;
 	}
-	socket.emit('newGame', { "username" : gameApp.username }, function(gameID, socketID){
+	socket.emit('newGame', { "username" : gameApp.username }, function(gameID, socketID, err){
+		if (err === "samename" ) {
+			alert('Name taken.');
+			return;
+		}
 		if (!gameID){
-			alert('Unable to create game.')
-			return
+			alert('Unable to create game.');
+			return;
 		}
 		gameApp.gameID = gameID;
 		gameApp.players.push({socketID: socketID, username: gameApp.username })
@@ -44,10 +48,14 @@ var joinGame = function() {
 		alert('Enter a gameID.')
 		return;
 	}
-	socket.emit('joinGame', {"gameID" : gameApp.gameID, "username" : gameApp.username }, function(socketID){
+	socket.emit('joinGame', {"gameID" : gameApp.gameID, "username" : gameApp.username }, function(socketID, err){
+		if (err === "samename" ) {
+			alert('Name taken.');
+			return;
+		}
 		if (!socketID){
-			alert('Unable to join game.')
-			return
+			alert('Unable to join game.');
+			return;
 		}
 		gameApp.players.push({socketID: socketID, username: gameApp.username })
 	})
