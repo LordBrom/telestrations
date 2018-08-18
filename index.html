@@ -3,8 +3,8 @@
 <head>
 	<title></title>
 	<link rel="stylesheet" href="styles/main.css">
-    <!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> -->
-    <script src="scripts/local_Vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!-- <script src="scripts/local_Vue.min.js"></script> -->
     <!-- <script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script> -->
     <script src="scripts/local_signature_pad.min.js"></script>
     <script src="scripts/DrawPad.js"></script>
@@ -35,7 +35,8 @@
 					<li class="playerName" v-for="player in players" > {{ player.username }} </li>
 				</ul>
 			</div>
-			<div class="panelSubmit" v-on:click=startGame>Start Game</div>
+			<div class="panelSubmit" v-if="playerReady == 0" v-on:click=playerReady>Ready?</div>
+			<div class="panelSubmit" v-if="playerReady == 1" >Waiting on other players...</div>
 		</div>
 
 

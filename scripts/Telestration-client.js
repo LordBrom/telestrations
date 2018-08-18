@@ -21,6 +21,15 @@ var submitText = function() {
 	setNewRound();
 }
 
+var playerReady = function() {
+	socket.emit('readyToStart', {}, function(success, err){
+		if (success){
+			gameApp.playerReady = 1
+		}
+
+	})
+}
+
 var hostGame = function() {
 	if (gameApp.username == '') {
 		alert('Enter a username.')

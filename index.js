@@ -12,7 +12,7 @@ const logger        = require('logger').createLogger('log_dev.log');
 const logger_player = require('logger').createLogger('log_player.log');
 const logger_game   = require('logger').createLogger('log_game.log');
 
-const PromptList     = require('./../PromptList.js');
+const PromptList     = require('./PromptList.js');
 const Telestration   = require('./scripts/Telestration.js');
 
 var games = {};
@@ -43,11 +43,10 @@ io.sockets.on('connection', function (socket) {
 
 		var gameID = socket.gameID;
 		if (!gameID)        { logger.warn("no game id");    return; }
-		if (!games[gameID]) { logger.warn("no game found"); return; }
 
-		if (games[gameID].status == "lobby") {
+		if (gameStatus(gameID) == "lobby") {
 			games[gameID].removePlayer(socket.id)
-			io.to(gameID).emit("setPlayers", games[gameID].exportPlayers());
+			io.to(gameID).emit("setPlayers", );
 		}
 	})
 
@@ -83,26 +82,18 @@ io.sockets.on('connection', function (socket) {
 
 	socket.on('readyToStart', function(data, callback){
 		var gameObj = table_game.findOne({"gameID": data.gameID});
-		if (!data.gameID)   { logger.warn('No gameID provided');   callback(false, msg); return; }
-		if (!data.username) { logger.warn('No username provided'); callback(false, msg); return; }
+		if (!socket.gameID) { logger.warn('No gameID provided');   callback(false, msg); return; }
 		if (!gameObj)       { logger.warn('Game not found');       callback(false, msg); return; }
+
+		setPlayerReadyToStart(socket.gameID, socket.id);
+
+		callback(true)
 	})
 
 
 
 	socket.on('startGame', function(data){
 		logger_game.info("starting game ", socket.gameID)
-
-
-		// games[socket.gameID].status = 'playing'
-
-		// games[socket.gameID].socketIO = io
-		// games[socket.gameID].fs = fs
-		// games[socket.gameID].mkdirp = mkdirp
-		// games[socket.gameID].gamesDir = __dirname  + '/games/'
-
-		// games[socket.gameID].startGame();
-
 	})
 
 
@@ -169,9 +160,9 @@ var createGame = function() {
 }
 
 var addPlayer = function(gameID, socketID, userName) {
-	if (!userName || !userName.length) { logger.warn("no username");  return false; }
 	if (!gameID   || !gameID.length)   { logger.warn("no game id");   return false; }
 	if (!socketID || !socketID.length) { logger.warn("no socket id"); return false; }
+	if (!userName || !userName.length) { logger.warn("no username");  return false; }
 
 	var nameCheck = table_player.findOne({"username": userName})
 	if (nameCheck) { return "samename"; }
@@ -206,8 +197,6 @@ var setPlayerReadyToStart = function(gameID, socketID) {
 
 	player.readyToStart = true
 	table_player.update(player)
-
-
 
 	return true;
 

@@ -11,7 +11,8 @@ var gameApp = new Vue({
 		gameRound: 1,
 		nextRounds: [],
 		waitingForPrompt: 0,
-		finalSheet: []
+		finalSheet: [],
+		playerReady: 0
 	},
 	methods: {
 		submitDrawing: submitDrawing,
@@ -21,6 +22,7 @@ var gameApp = new Vue({
 		startGame:     startGame,
 		getNewPrompt:  getNewPrompt,
 		initCanvas:    initCanvas,
-		resetGame:     resetGame
+		resetGame:     resetGame,
+		playerReady:   playerReady
 	}
 });
