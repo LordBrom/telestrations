@@ -12,7 +12,7 @@ var gameApp = new Vue({
 		nextRounds: [],
 		waitingForPrompt: 0,
 		finalSheet: [],
-		playerReady: 0
+		isReady: 0
 	},
 	methods: {
 		submitDrawing: submitDrawing,

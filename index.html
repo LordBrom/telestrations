@@ -35,8 +35,8 @@
 					<li class="playerName" v-for="player in players" > {{ player.username }} </li>
 				</ul>
 			</div>
-			<div class="panelSubmit" v-if="playerReady == 0" v-on:click=playerReady>Ready?</div>
-			<div class="panelSubmit" v-if="playerReady == 1" >Waiting on other players...</div>
+			<div class="panelSubmit" v-if="isReady == 0" v-on:click=playerReady>Ready?</div>
+			<div class="panelSubmit" v-if="isReady == 1" >Waiting on other players...</div>
 		</div>
 
 

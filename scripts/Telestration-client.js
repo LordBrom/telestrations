@@ -24,7 +24,7 @@ var submitText = function() {
 var playerReady = function() {
 	socket.emit('readyToStart', {}, function(success, err){
 		if (success){
-			gameApp.playerReady = 1
+			gameApp.isReady = 1
 		}
 
 	})
