@@ -31,7 +31,7 @@ var table_player = db.addCollection('players')
 var table_sheet  = db.addCollection('sheet')
 var table_round  = db.addCollection('round')
 
-server.listen(3000);
+server.listen(8080);
 
 io.sockets.on('connection', function (socket) {
 	logger_player.info('A user has connected');
@@ -58,7 +58,7 @@ io.sockets.on('connection', function (socket) {
 		socket.join(gameID);
 
 		var result = addPlayer( gameID, socket.id, data.username )
-		if (result === "samename") { callback(false, false, "samename") }
+		if (result === "samename") { callback(false, false, "samename"); return; }
 
 		callback(gameID, socket.id)
 		socket.emit("switchPanel", "lobbyPanel");
@@ -72,7 +72,7 @@ io.sockets.on('connection', function (socket) {
 		if (!gameObj||!Object.keys(gameObj).length)       { logger.warn("(func: joinGame)", 'Game not found');       callback(false); return; }
 
 		var result = addPlayer(gameID, socket.id, data.username)
-		if (result === "samename") { callback(false, "samename") }
+		if (result === "samename") { callback(false, "samename"); return; }
 		socket.gameID = gameID;
 
 		callback(socket.id)
