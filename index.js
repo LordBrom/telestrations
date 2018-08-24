@@ -193,10 +193,14 @@ var setPlayerDisconnected = function(socketID){
 
 var setPlayerReadyToStart = function(gameID, socketID) {
 	var player = table_player.findOne({"socketID": socketID})
-	if (!player||!Object.keys(player).length) { logger.warn("(func: setPlayerDisconnected)", "Player not found with socket id", socketID); return false; }
+	if (!player||!Object.keys(player).length) { logger.warn("(func: setPlayerReadyToStart)", "Player not found with socket id", socketID); return false; }
 
 	player.readyToStart = true
 	table_player.update(player)
+
+	var readyCheck = table_player.findOne({"gameID": gameID, "readyToStart": false, "connected": true});
+
+	if (readyCheck && !Object.keys(readyCheck).length)
 
 	return true;
 
@@ -230,6 +234,6 @@ var gameStarted = function(gameID) {
 	return gameObj.started;
 }
 
-var startGame = function() {
+var startGame = function(gameID) {
 
 }
