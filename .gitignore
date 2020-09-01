@@ -1,3 +1,5 @@
 /node_modules
 /gamePictures
 /games
+
+*.code-workspace

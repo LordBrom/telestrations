@@ -1,0 +1,7 @@
+version: "3"
+services:
+    node:
+        container_name: "telestrations-node"
+        build: .
+        ports:
+            - "80:8080"
