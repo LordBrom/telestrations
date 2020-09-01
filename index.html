@@ -2,91 +2,148 @@
 <html>
 <head>
 	<title></title>
-	<link rel="stylesheet" href="styles/main.css">
-    <!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> -->
-    <script src="scripts/local_Vue.min.js"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script> -->
+	<!-- <link rel="stylesheet" href="styles/main.css"> -->
+	<!-- Bootstrap -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+	<!--- font awesome --->
+	<!-- <link rel="stylesheet" href="/assets/css/all.css"> -->
+	
+	<!--- debounce --->
+	<script src="scripts/debounce.js" type="text/javascript"></script>
+	<!--- Vue.js --->
+    <!-- <script src="scripts/local_Vue.min.js"></script> -->
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="scripts/local_signature_pad.min.js"></script>
     <script src="scripts/DrawPad.js"></script>
-    <script src="scripts/Telestration-client.js"></script>
+	<script src="scripts/Telestration-client.js"></script>
+
 </head>
 <body>
 
-	<div id="gameWindow">
-		<!-- <div id="gameRound"> {{ gameRound }} </div> -->
+	<div id="gameWindow" class="container card">
+		<div class="row">
 
-		<div id="homePanel"      class="gamePanel" v-if="showPanel == 'homePanel'">
-			<div  id="joinGameUsername" class="inputWrapper">
-				<input type="text"  autocomplete="off" placeholder="Enter Username"  v-model="username" />
-			</div>
+			<div id="homePanel" class="col-12 gamePanel" v-if="showPanel == 'homePanel'">
+				<div  id="joinGameUsername" class="row inputWrapper">
+					<div class="col-12 form-group">
+						<input type="text" class="form-control" autocomplete="off" placeholder="Enter Username"  v-model="username" />
+					</div>
+				</div>
 
-			<div class="panelSubmit hostGame" v-on:click=hostGame>Host Game</div>
-			<div   id="joinGameInput" class="inputWrapper">
-				<input type="text"   autocomplete="off" placeholder="Enter GameID"  v-model="gameID" v-on:keyup.enter="joinGame" />
-			</div>
-			<div class="panelSubmit joinGame" v-on:click=joinGame>Join Game</div>
-		</div>
+				<div class="row">
+					<div class="col-12 form-group">
+						<div class="panelSubmit hostGame text-center btn btn-primary w-100" v-on:click=hostGame>Host Game</div>
+					</div>
+				</div>
 
-
-		<div id="lobbyPanel"      class="gamePanel" v-if="showPanel == 'lobbyPanel'">
-			<div id="gameIdDisplay" >{{ gameID }}</div>
-			<div id="userList">
-				<ul>
-					<li class="playerName" v-for="player in players" > {{ player.username }} </li>
-				</ul>
-			</div>
-			<div class="panelSubmit" v-on:click=startGame>Start Game</div>
-		</div>
-
-
-		<div id="inputDraw"      class="gamePanel" v-else-if="showPanel == 'inputDraw'">
-			<div id="drawPadPrompt" v-on:click="getNewPrompt">{{ drawPadPrompt }}</div>
-			<div id="drawPad">
-	    		<div class="drawPad--body">
-					<canvas></canvas>
+				<div   id="joinGameInput" class="row inputWrapper">
+					<div class="col-12 form-group">
+						<input type="text" class="form-control" autocomplete="off" placeholder="Enter GameID"  v-model="gameID" v-on:keyup.enter="joinGame" />
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-12 form-group">
+						<div class="panelSubmit joinGame text-center btn btn-success w-100" v-on:click=joinGame>Join Game</div>
+					</div>
 				</div>
 			</div>
-			<div class="panelSubmit" v-on:click=submitDrawing>Submit Drawing</div>
-		</div>
 
 
-		<div id="inputText"      class="gamePanel" v-else-if="showPanel == 'inputText'">
-			<div id="inputText-picture">
-				<img v-bind:src="imagePrompt" id="inputText-picture-img" onerror="imageLoadFailed(this)" />
+			<div id="lobbyPanel" class="col-12 gamePanel" v-if="showPanel == 'lobbyPanel'">
+				<div class="row">
+					<div id="gameIdDisplay" class="col-12 text-center" >{{ gameID }}</div>
+				</div>
+				<div class="row">
+					<div id="userList" class="col-12">
+						<ul>
+							<li class="playerName" v-for="player in players" > {{ player.username }} </li>
+						</ul>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-12 form-group">
+						<div class="panelSubmit text-center btn btn-success w-100" v-on:click=startGame>Start Game</div>
+					</div>
+				</div>
 			</div>
-			<div id="inputTextField" class="inputWrapper">
-				<input type="text"   autocomplete="off" placeholder="Describe what you see."  v-model="textInput" v-on:keyup.enter="submitText" />
-			</div>
-			<div class="panelSubmit" v-on:click=submitText>Submit Description</div>
-		</div>
 
 
-		<div id="waitPanel" class="gamePanel" v-else-if="showPanel == 'waitPanel'">
-			<div class="msg">
-				waiting on other players...
-			</div>
-		</div>
+			<div id="inputDraw"      class="col-12 gamePanel" v-else-if="showPanel == 'inputDraw'">
+				<div class="row">
+					<div id="drawPadPrompt" class="col-12 text-center" v-on:click="getNewPrompt">{{ drawPadPrompt }}</div>
+				</div>
+				<!-- <div class="row">
+					<div class="col-12"> -->
 
-
-		<div id="finalPanel" class="gamePanel" v-else-if="showPanel == 'finalPanel'">
-			<div id="scrollContainer">
-				<ul>
-					<li class="result" v-for="item in finalSheet">
-						<div class="result-picture" v-if="item.type == 'draw'">
-							<img v-bind:src="item.text" id="inputText-picture-img" />
+						<div id="drawPad">
+							<div class="drawPad--body">
+								<canvas></canvas>
+							</div>
 						</div>
-						<div class="result-text" v-else-if="item.type == 'text'">
-							{{ item.text }}
-						</div>
-					</li>
-					<li class="result" >
-						<div class="result-spacer">&nbsp;</div>
-					</li>
-					<li class="result" >
-						<div class="result-text" v-on:click=resetGame>Quit Game</div>
-					</li>
-				</ul>
+						
+					<!-- </div>
+				</div> -->
+				<div class="row">
+					<div class="col-12">
+						<div class="panelSubmit text-center btn btn-success w-100" v-on:click=submitDrawing>Submit Drawing</div>
+					</div>
+				</div>
 			</div>
+
+
+			<div id="inputText"      class="col-12 gamePanel" v-else-if="showPanel == 'inputText'">
+				<div id="inputText-picture">
+					<img v-bind:src="imagePrompt" id="inputText-picture-img" onerror="imageLoadFailed(this)" />
+				</div>
+
+				<div id="inputTextField" class="inputWrapper">
+					<div class="col-12 form-group">
+						<input type="text"  class="form-control"  autocomplete="off" placeholder="Describe what you see."  v-model="textInput" v-on:keyup.enter="submitText" />
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-12">
+						<div class="panelSubmit text-center btn btn-success w-100" v-on:click=submitText>Submit Description</div>
+					</div>
+				</div>
+			</div>
+
+
+			<div id="waitPanel" class="col-12 gamePanel" v-else-if="showPanel == 'waitPanel'">
+				<div class="row">
+					<div class="msg col-12 text-center">
+						waiting on other players...
+					</div>
+				</div>
+			</div>
+
+
+			<div id="finalPanel" class="col-12 gamePanel" v-else-if="showPanel == 'finalPanel'">
+				<div id="scrollContainer">
+					<ul>
+						<li class="result" v-for="item in finalSheet">
+							<div class="result-picture" v-if="item.type == 'draw'">
+								<img v-bind:src="item.text" id="inputText-picture-img" />
+							</div>
+							<div class="result-text" v-else-if="item.type == 'text'">
+								{{ item.text }}
+							</div>
+						</li>
+						<li class="result" >
+							<div class="result-spacer">&nbsp;</div>
+						</li>
+						<li class="result" >
+							<div class="row">
+								<div class="col-12">
+									<div class="result-text" v-on:click=resetGame>Quit Game</div>
+								</div>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+
 		</div>
 	</div>
 
