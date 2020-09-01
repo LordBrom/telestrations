@@ -1,0 +1,271 @@
+.inputWrapper input {
+    width:     100%;
+	height:    44px;
+    font-size: 25px;
+}
+
+ul {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+}
+
+#gameRound {position: fixed; top: 0; left: 0;}
+
+
+/*******************************************************
+Game Window
+*******************************************************/
+#gameWindow {
+	position: fixed;
+	top:      0;
+	left:     0;
+	height:   100%;
+	width:    100%;
+}
+
+#gameWindow .gamePanel {
+	position: absolute;
+	top:      0;
+	left:     0;
+	height:   100%;
+	width:    100%;
+}
+
+#gameWindow .gamePanel .panelSubmit {
+	position:      absolute;
+	bottom:        3%;
+	left:          25px;
+	right:         25px;
+
+	height:        48px;
+	line-height:   50px;
+	text-align:    center;
+	font-size:     25px;
+
+	border:        1px solid black;
+    border-radius: 25px;
+
+}
+
+/*******************************************************
+Home Panel
+*******************************************************/
+
+#homePanel #joinGameUsername {
+	position:      absolute;
+	bottom:		   50%;
+	left:          25px;
+	right:         25px;
+
+	-webkit-appearance: none;
+
+    font-size: 25px;
+}
+
+#homePanel.gamePanel .panelSubmit.hostGame {
+	bottom:		   25%;
+}
+
+#homePanel #joinGameInput {
+	position:      absolute;
+	bottom:		   10%;
+	left:          25px;
+	right:         25px;
+
+	-webkit-appearance: none;
+
+    font-size: 25px;
+}
+
+#homePanel.gamePanel .panelSubmit.joinGame {
+
+}
+
+/*******************************************************
+Lobby Panel
+*******************************************************/
+#lobbyPanel #gameIdDisplay {
+	position:      absolute;
+	top:           25px;
+	left:          25px;
+	right:         25px;
+
+	height:        100px;
+
+	font-size:     75px;
+
+
+    text-align: center;
+}
+
+#lobbyPanel #userList {
+	position:      absolute;
+	top:           125px;
+	bottom: 	   100px;
+	left:          25px;
+	right:         25px;
+
+	border:        1px solid black;
+    border-radius: 25px;
+    overflow-y: scroll;
+}
+
+#lobbyPanel #userList ul {
+	position:      absolute;
+	top:           0;
+	left:          0;
+	height:        100%;
+	width:         100%;
+}
+
+#lobbyPanel #userList ul .playerName {
+	font-size: 40px;
+     padding: 5px 0px 5px 50px;
+}
+
+/*******************************************************
+Wait Panel
+*******************************************************/
+#waitPanel .msg {
+	position:      absolute;
+	top:           50%;
+	left:          50%;
+	-webkit-transform: translate(-50%, -50%);
+	   -moz-transform: translate(-50%, -50%);
+	    -ms-transform: translate(-50%, -50%);
+	     -o-transform: translate(-50%, -50%);
+	        transform: translate(-50%, -50%);
+
+	font-size: 50px;
+
+	white-space: nowrap;
+}
+
+
+/*******************************************************
+Draw Pad Panel
+*******************************************************/
+#inputDraw #drawPadPrompt {
+	position:      absolute;
+	top:           25px;
+	left:          25px;
+	right:         25px;
+
+	height:        50px;
+	line-height:   50px;
+	text-align:    center;
+	font-size:     25px;
+
+	border:        1px solid black;
+    border-radius: 25px;
+}
+
+#inputDraw #drawPad {
+	position: absolute;
+	top:      100px;
+	bottom:   100px;
+	left:     25px;
+	right:    25px;
+
+	border:   1px solid black;
+}
+
+#inputDraw #drawPad .drawPad--body {
+	position: absolute;
+	top:      0;
+	left:     0;
+	height:   100%;
+	width:    100%;
+}
+
+#inputDraw #drawPad canvas {
+	position: absolute;
+	top:      0;
+	left:     0;
+	height:   100%;
+	width:    100%;
+
+}
+
+/*******************************************************
+Text Pad Panel
+*******************************************************/
+#inputText #inputTextField {
+	position:      absolute;
+	bottom:        100px;
+	left:          25px;
+	right:         25px;
+
+	-webkit-appearance: none;
+
+    font-size: 25px;
+}
+
+#inputText #inputText-picture {
+	position:      absolute;
+	top:           25px;
+    bottom:        175px;
+	left:          25px;
+	right:         25px;
+
+	border:        1px solid black;
+    border-radius: 25px;
+
+    overflow: hidden;
+}
+
+#inputText #inputText-picture img {
+	position:      absolute;
+	top:           0;
+	left:          0;
+	height:        100%;
+	width:         100%;
+}
+
+/*******************************************************
+Final Panel
+*******************************************************/
+
+#finalPanel {
+	overflow-y: scroll;
+}
+
+#finalPanel #scrollContainer {
+	position:      relative;
+	width: 100%;
+}
+
+#finalPanel #scrollContainer ul {
+	padding: 25px;
+}
+
+#finalPanel #scrollContainer ul .result {
+	padding-bottom: 25px;
+}
+
+#finalPanel .result-picture {
+
+	border:        1px solid black;
+    border-radius: 25px;
+
+    overflow: hidden;
+}
+
+#finalPanel .result-picture img {
+	width:         100%;
+}
+
+#finalPanel .result-text {
+	height:        50px;
+	line-height:   50px;
+	text-align:    center;
+	font-size:     25px;
+
+	border:        1px solid black;
+    border-radius: 25px;
+}
+
+#finalPanel .result-spacer {
+	height: 50px;
+}

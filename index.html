@@ -2,7 +2,7 @@
 <html>
 <head>
 	<title></title>
-	<!-- <link rel="stylesheet" href="styles/main.css"> -->
+	<link rel="stylesheet" href="styles/main.css">
 	<!-- Bootstrap -->
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 	<!--- font awesome --->
@@ -72,17 +72,11 @@
 				<div class="row">
 					<div id="drawPadPrompt" class="col-12 text-center" v-on:click="getNewPrompt">{{ drawPadPrompt }}</div>
 				</div>
-				<!-- <div class="row">
-					<div class="col-12"> -->
-
-						<div id="drawPad">
-							<div class="drawPad--body">
-								<canvas></canvas>
-							</div>
-						</div>
-						
-					<!-- </div>
-				</div> -->
+				<div id="drawPad" class="row">
+					<div class="drawPad--body col-12">
+						<canvas></canvas>
+					</div>
+				</div>
 				<div class="row">
 					<div class="col-12">
 						<div class="panelSubmit text-center btn btn-success w-100" v-on:click=submitDrawing>Submit Drawing</div>
@@ -126,7 +120,7 @@
 							<div class="result-picture" v-if="item.type == 'draw'">
 								<img v-bind:src="item.text" id="inputText-picture-img" />
 							</div>
-							<div class="result-text" v-else-if="item.type == 'text'">
+							<div class="result-text text-center" v-else-if="item.type == 'text'">
 								{{ item.text }}
 							</div>
 						</li>
@@ -136,7 +130,7 @@
 						<li class="result" >
 							<div class="row">
 								<div class="col-12">
-									<div class="result-text" v-on:click=resetGame>Quit Game</div>
+									<div class="result-text btn btn-danger w-100" v-on:click=resetGame>Quit Game</div>
 								</div>
 							</div>
 						</li>
